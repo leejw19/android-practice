@@ -4,7 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 
-class SqliteTransaction {
+class DbExecutor {
 
     companion object {
 
@@ -19,7 +19,7 @@ class SqliteTransaction {
                 db.setTransactionSuccessful()
             } catch (e: Exception) {
 
-                Log.e("DB", e.message)
+                Log.e("DB", e.message ?: "error")
             } finally {
                 db.endTransaction()
             }
@@ -29,7 +29,7 @@ class SqliteTransaction {
 
     }
 
-    interface Callback <T> {
+    interface Callback<T> {
         fun run(db: SQLiteDatabase): T
     }
 }

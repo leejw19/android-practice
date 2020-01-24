@@ -4,35 +4,34 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 
-open class BaseDao(private val db: SQLiteDatabase) {
+abstract class BaseDao<T>(private val db: SQLiteDatabase) {
+
+
+    abstract fun cursorToEntity(cursor: Cursor): T
 
     fun updateOrInsert(
         tableName: String,
         values: ContentValues,
         whereClause: String,
-        whereArgs: Array<String>?): Boolean {
-
-        return db.update(tableName, values, whereClause, whereArgs) > 0 ||
-                db.insertWithOnConflict(tableName, null, values, SQLiteDatabase.CONFLICT_IGNORE) != -1L
-
-    }
-    fun insert(tableName: String, values: ContentValues): Long {
-        return db.insert(tableName, null, values)
-    }
+        whereArgs: Array<String>?
+    ): Boolean = update(tableName, values, whereClause, whereArgs) || insert(tableName, values)
 
     fun query(
-        tableName: String?,
-        columns: Array<String>?,
-        selection: String?,
-        selectionArgs: Array<String>?,
-        groupBy: String?,
-        having: String?,
-        orderBy: String?,
-        limit: String?
-    ): Cursor? {
-        return db.query(
-            tableName, columns, selection,
-            selectionArgs, groupBy, having, orderBy, limit
-        )
-    }
+        tableName: String,
+        selectionClause: String,
+        selectionArgs: Array<String>?
+    ): Cursor? = db.query(tableName, null, selectionClause, selectionArgs, null, null, null)
+
+    fun insert(
+        tableName: String,
+        values: ContentValues
+    ): Boolean =
+        db.insertWithOnConflict(tableName, null, values, SQLiteDatabase.CONFLICT_IGNORE) != -1L
+
+    fun update(
+        tableName: String,
+        values: ContentValues,
+        whereClause: String,
+        whereArgs: Array<String>?
+    ): Boolean = db.update(tableName, values, whereClause, whereArgs) > 0
 }
