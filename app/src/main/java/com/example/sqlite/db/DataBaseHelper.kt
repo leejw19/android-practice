@@ -3,6 +3,7 @@ package com.example.sqlite.db
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import com.example.sqlite.db.schema.MyProductEpisodeSchema
 import com.example.sqlite.db.schema.MyProductSchema
 
@@ -11,7 +12,7 @@ class DataBaseHelper private constructor(context: Context) :
 
     companion object {
         private const val DATABASE_VERSION = 1
-        private const val DATABASE_NAME = "text_db.sql"
+        private const val DATABASE_NAME = "text.db"
 
         private var instance: DataBaseHelper? = null
 
@@ -23,15 +24,31 @@ class DataBaseHelper private constructor(context: Context) :
                     instance = it
                 }
             }
+
+        fun open(context: Context) {
+            getInstance(context)
+        }
+
+
+    }
+
+    val db: SQLiteDatabase = writableDatabase
+
+    override fun close() {
+        db.close()
+        super.close()
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
 
+        Log.d("DataBase", "Calling onCreate")
+        Log.d("DataBase", "DB is " + (if (db == null) "null" else "not null"))
         try {
             db?.execSQL(MyProductSchema.CREATE_TABLE)
             db?.execSQL(MyProductEpisodeSchema.TABLE_CREATE)
         } catch (e: Exception) {
             // TODO(handle error)
+            Log.e("DataBase", e.message)
         }
     }
 

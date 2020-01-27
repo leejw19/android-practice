@@ -8,7 +8,7 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "com.example.test_db_pstm"
+        applicationId "com.example.sqlite"
         minSdkVersion 19
         targetSdkVersion 29
         versionCode 1

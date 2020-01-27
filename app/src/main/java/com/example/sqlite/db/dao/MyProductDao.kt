@@ -3,36 +3,44 @@ package com.example.sqlite.db.dao
 import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.util.Log
 import com.example.sqlite.db.dto.MyProduct
-import com.example.sqlite.db.schema.MyProductSchema.MY_PRODUCT
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_ID
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_PRODUCT_ID
+import com.example.sqlite.db.schema.MyProductSchema.COLUMN_BOOKMARKED_AT
+import com.example.sqlite.db.schema.MyProductSchema.COLUMN_FLAG_FETCH_SORT_VALUE_LIST_UPDATED_ASC
+import com.example.sqlite.db.schema.MyProductSchema.COLUMN_IS_TICKET_CONSUMED_MY_PRODUCT_FLAG
+import com.example.sqlite.db.schema.MyProductSchema.COLUMN_JSON_TEXT
 import com.example.sqlite.db.schema.MyProductSchema.COLUMN_LAST_PRODUCT_EPISODE_ID
 import com.example.sqlite.db.schema.MyProductSchema.COLUMN_LAST_PRODUCT_EPISODE_TITLE
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_TICKET_TOTAL_COUNT
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_WAIT_FREE_TICKET_START_CHARGED_AT
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_WAIT_FREE_TICKET_FINISH_CHARGED_AT
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_WAIT_FREE_EPISODE_COUNT
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_WAIT_FREE_EPISODE_READ_COUNT
+import com.example.sqlite.db.schema.MyProductSchema.COLUMN_LAST_PURCHASED_AT
+import com.example.sqlite.db.schema.MyProductSchema.COLUMN_LOCAL_HISTORY_STATUS
+import com.example.sqlite.db.schema.MyProductSchema.COLUMN_LOCAL_PUSH_STATUS
 import com.example.sqlite.db.schema.MyProductSchema.COLUMN_NOW_FREE_NEXT_META_INFO
 import com.example.sqlite.db.schema.MyProductSchema.COLUMN_NOW_FREE_NEXT_READ_AT
 import com.example.sqlite.db.schema.MyProductSchema.COLUMN_NOW_FREE_OPEN_STATUS_FINISH_DAYS
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_IS_TICKET_CONSUMED_MY_PRODUCT_FLAG
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_LAST_PURCHASED_AT
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_BOOKMARKED_AT
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_USER_CONSUMED_TICKET_PRODUCT_EPISODE_INFO_LAST_SYNC_TIME
 import com.example.sqlite.db.schema.MyProductSchema.COLUMN_PRODUCT_EPISODE_LIST_SORT_INFO
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_LOCAL_PUSH_STATUS
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_LOCAL_HISTORY_STATUS
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_TICKET_CONSUMED_MY_PRODUCT_STATUS
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_JSON_TEXT
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_STATUS
+import com.example.sqlite.db.schema.MyProductSchema.COLUMN_PRODUCT_ID
 import com.example.sqlite.db.schema.MyProductSchema.COLUMN_SORT_VALUE_LIST_UPDATED_ASC
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_FLAG_FETCH_SORT_VALUE_LIST_UPDATED_ASC
+import com.example.sqlite.db.schema.MyProductSchema.COLUMN_STATUS
+import com.example.sqlite.db.schema.MyProductSchema.COLUMN_TICKET_CONSUMED_MY_PRODUCT_STATUS
+import com.example.sqlite.db.schema.MyProductSchema.COLUMN_TICKET_TOTAL_COUNT
 import com.example.sqlite.db.schema.MyProductSchema.COLUMN_UPDATED_AT
+import com.example.sqlite.db.schema.MyProductSchema.COLUMN_USER_CONSUMED_TICKET_PRODUCT_EPISODE_INFO_LAST_SYNC_TIME
+import com.example.sqlite.db.schema.MyProductSchema.COLUMN_WAIT_FREE_EPISODE_COUNT
+import com.example.sqlite.db.schema.MyProductSchema.COLUMN_WAIT_FREE_EPISODE_READ_COUNT
+import com.example.sqlite.db.schema.MyProductSchema.COLUMN_WAIT_FREE_TICKET_FINISH_CHARGED_AT
+import com.example.sqlite.db.schema.MyProductSchema.COLUMN_WAIT_FREE_TICKET_START_CHARGED_AT
+import com.example.sqlite.db.schema.MyProductSchema.MY_PRODUCT
 
 class MyProductDao(val db: SQLiteDatabase) : BaseDao<MyProduct>(db) {
 
+    companion object {
+        const val INSERT_SQL =
+            "INSERT OR REPLACE INTO $MY_PRODUCT (product_id, json_text, status) VALUES(?,?,?)"
+        const val INSERT_SQL_PARAMS =
+            ",(?,?,?)"
+
+        const val COLUMN_COUNT = 3
+    }
     fun updateOrInsert(myProductList: ArrayList<MyProduct>): Boolean {
 
         var successCount = 0
@@ -56,6 +64,61 @@ class MyProductDao(val db: SQLiteDatabase) : BaseDao<MyProduct>(db) {
         }
 
         return successCount == myProductList.size
+
+    }
+
+    fun updateOrInsert2(myProductList: ArrayList<MyProduct>): Boolean {
+
+        if (myProductList.isEmpty()) {
+            return false
+        }
+
+        val loopCount = getLoopCount(COLUMN_COUNT, myProductList.size)
+        val maxRowCount = getRowPerLoop(COLUMN_COUNT)
+
+        var currentListIndex = 0
+        try {
+            for (loopIndex in 0 until  loopCount) {
+
+                var endIndex = currentListIndex + maxRowCount
+                if (endIndex >= myProductList.size) endIndex = myProductList.size
+
+                var sql = ""
+                for (i in currentListIndex until endIndex ) {
+                    sql += if (i == currentListIndex) INSERT_SQL else INSERT_SQL_PARAMS
+                }
+
+                val statement = db.compileStatement(sql)
+
+                var index = 0
+
+                for (i in currentListIndex until endIndex) {
+                    statement.bindLong(index + 1, myProductList[i].productId.toLong())
+                    statement.bindString(index + 2, myProductList[i].jsonText)
+                    statement.bindLong(index + 3, myProductList[i].status.toLong())
+                    index += COLUMN_COUNT
+                }
+                statement.execute()
+                statement.close()
+                currentListIndex = endIndex
+
+            }
+
+        } catch (e: Exception) {
+            // Error
+            return false
+        }
+
+        return true
+
+    }
+
+    fun updateOrInsert3(myProductList: ArrayList<MyProduct>): Boolean {
+
+        myProductList.forEach {
+            db.execSQL("INSERT OR REPLACE INTO $MY_PRODUCT (product_id, json_text, status) VALUES(${it.productId},\"${it.jsonText}\",${it.status});")
+        }
+        return true
 
     }
 
@@ -113,7 +176,7 @@ class MyProductDao(val db: SQLiteDatabase) : BaseDao<MyProduct>(db) {
 
     override fun cursorToEntity(cursor: Cursor): MyProduct {
         return MyProduct(
-            cursor.getInt(cursor.getColumnIndex(COLUMN_ID)),
+//            cursor.getInt(cursor.getColumnIndex(COLUMN_ID)),
             cursor.getInt(cursor.getColumnIndex(COLUMN_PRODUCT_ID)),
             cursor.getInt(cursor.getColumnIndex(COLUMN_LAST_PRODUCT_EPISODE_ID)),
             cursor.getString(cursor.getColumnIndex(COLUMN_LAST_PRODUCT_EPISODE_TITLE)),

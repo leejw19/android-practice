@@ -10,7 +10,7 @@ class DbExecutor {
 
         fun <T> tx(context: Context, callback: Callback<T>): T? {
 
-            val db = DataBaseHelper.getInstance(context).writableDatabase
+            val db = DataBaseHelper.getInstance(context).db
             var result: T? = null
 
             try {

@@ -17,6 +17,13 @@ class MyProductMethod {
             })
         }
 
+        fun registerWithStatement(context: Context, myProductList: ArrayList<MyProduct>): Boolean? {
+            return DbExecutor.tx(context, object : DbExecutor.Callback<Boolean> {
+                override fun run(db: SQLiteDatabase) =
+                    MyProductDao(db).updateOrInsert2(myProductList)
+            })
+        }
+
         fun read(context: Context, productId: Long): MyProduct? {
             return DbExecutor.tx(context, object : DbExecutor.Callback<MyProduct?> {
                 override fun run(db: SQLiteDatabase) = MyProductDao(db).select(productId)
