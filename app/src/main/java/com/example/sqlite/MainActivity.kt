@@ -4,9 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.sqlite.db.DataBaseHelper
-import com.example.sqlite.db.dao.MyProductDao
 import com.example.sqlite.db.dto.MyProduct
-import com.example.sqlite.db.method.MyProductMethod
+import com.example.sqlite.db.method.BookShelfDataMethod
 import com.example.sqlite.MainActivity.InsertType.*
 
 import kotlinx.android.synthetic.main.content_main.*
@@ -21,45 +20,53 @@ class MainActivity : AppCompatActivity() {
     enum class InsertType {
         CONTENT_VALUES, PREPARED_STATEMENT, RAW_SQL
     }
+
     companion object {
-        const val OBJECT_COUNT = 3000
+        const val OBJECT_COUNT = 1000
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         DataBaseHelper.open(this)
 
-        createObjects()
 
         btn_test_1.setOnClickListener {
             it.isEnabled = false
-            contentValueResult.add(Pair(System.currentTimeMillis(),testUseContentsValues()))
+            createObjects(CONTENT_VALUES)
+            BookShelfDataMethod.deleteAllMyProduct(this)
+            contentValueResult.add(Pair(System.currentTimeMillis(), testUseContentsValues()))
             showResult(CONTENT_VALUES)
             it.isEnabled = true
         }
         btn_test_2.setOnClickListener {
             it.isEnabled = false
-            statementResult.add(Pair(System.currentTimeMillis(),testUseStatement()))
+            createObjects(PREPARED_STATEMENT)
+            BookShelfDataMethod.deleteAllMyProduct(this)
+            statementResult.add(Pair(System.currentTimeMillis(), testUseStatement()))
             showResult(PREPARED_STATEMENT)
             it.isEnabled = true
         }
         btn_test_3.setOnClickListener {
             it.isEnabled = false
-            rawSqlResult.add(Pair(System.currentTimeMillis(),testUseRawSql()))
+            createObjects(RAW_SQL)
+            BookShelfDataMethod.deleteAllMyProduct(this)
+            rawSqlResult.add(Pair(System.currentTimeMillis(), testUseRawSql()))
             showResult(RAW_SQL)
             it.isEnabled = true
         }
     }
 
-    private fun createObjects() {
+    private fun createObjects(insertType: InsertType) {
 
         testObjectList.clear()
 
-        for (i in 0 until  OBJECT_COUNT) {
+        for (i in 0 until OBJECT_COUNT) {
             testObjectList.add(
                 MyProduct(
-                    productId = i
+                    productId = i,
+                    jsonText = "${insertType.name}_$i"
                 )
             )
         }
@@ -67,13 +74,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun showResult(insertType: InsertType) {
 
-        val resultList = when(insertType) {
+        val resultList = when (insertType) {
             CONTENT_VALUES -> contentValueResult
             PREPARED_STATEMENT -> statementResult
             RAW_SQL -> rawSqlResult
         }
 
-        val resultView = when(insertType) {
+        val resultView = when (insertType) {
             CONTENT_VALUES -> txt_result_1
             PREPARED_STATEMENT -> txt_result_2
             RAW_SQL -> txt_result_3
@@ -87,9 +94,11 @@ class MainActivity : AppCompatActivity() {
             resultText += logText + "\n"
         }
 
-        resultView.text = resultText
-        Log.d("DB_EXECUTION", "($OBJECT_COUNT) ${insertType.name} : $logText")
 
+        resultView.text = resultText
+
+
+        Log.d("DB_TEST", "($OBJECT_COUNT) ${insertType.name} : $logText")
 
 
     }
@@ -122,21 +131,20 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun testUseContentsValues(): Long {
-        val result = MyProductMethod.register(this, testObjectList)
-        Log.d("DB_EXECUTE", "result = $result")
+        val result = BookShelfDataMethod.registerMyProducts(this, testObjectList)
+        Log.d("DB_TEST", "result = $result")
         return System.currentTimeMillis()
     }
 
     private fun testUseStatement(): Long {
-        val result = MyProductMethod.registerWithStatement(this, testObjectList)
-        Log.d("DB_EXECUTE", "result = $result")
+        val result = BookShelfDataMethod.registerMyProductsWithStatement(this, testObjectList)
+        Log.d("DB_TEST", "result = $result")
         return System.currentTimeMillis()
     }
 
     private fun testUseRawSql(): Long {
-        val db = DataBaseHelper.getInstance(this).db
-        val result = MyProductDao(db).updateOrInsert3(testObjectList)
-        Log.d("DB_EXECUTE", "result = $result")
+        val result = BookShelfDataMethod.registerMyProductsWithRawSql(this, testObjectList)
+        Log.d("DB_TEST", "result = $result")
         return System.currentTimeMillis()
     }
 }

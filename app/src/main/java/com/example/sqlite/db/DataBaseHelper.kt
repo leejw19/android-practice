@@ -32,23 +32,25 @@ class DataBaseHelper private constructor(context: Context) :
 
     }
 
-    val db: SQLiteDatabase = writableDatabase
+    private var db: SQLiteDatabase? = null
+
+
+    fun getDatabase(): SQLiteDatabase {
+        return db ?: writableDatabase.also { db = it }
+    }
 
     override fun close() {
-        db.close()
+        db?.close()
         super.close()
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-
-        Log.d("DataBase", "Calling onCreate")
-        Log.d("DataBase", "DB is " + (if (db == null) "null" else "not null"))
         try {
             db?.execSQL(MyProductSchema.CREATE_TABLE)
             db?.execSQL(MyProductEpisodeSchema.TABLE_CREATE)
         } catch (e: Exception) {
             // TODO(handle error)
-            Log.e("DataBase", e.message)
+            Log.e("DataBase", e.message ?: "error")
         }
     }
 

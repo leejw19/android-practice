@@ -4,18 +4,18 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 
-class DbExecutor {
+class SQLiteTransaction {
 
     companion object {
 
-        fun <T> tx(context: Context, callback: Callback<T>): T? {
+        fun <T> tx(context: Context, inTransaction: InTransaction<T>): T? {
 
-            val db = DataBaseHelper.getInstance(context).db
+            val db = DataBaseHelper.getInstance(context).getDatabase()
             var result: T? = null
 
             try {
                 db.beginTransactionNonExclusive()
-                result = callback.run(db)
+                result = inTransaction.execute(db)
                 db.setTransactionSuccessful()
             } catch (e: Exception) {
 
@@ -29,7 +29,7 @@ class DbExecutor {
 
     }
 
-    interface Callback<T> {
-        fun run(db: SQLiteDatabase): T
+    interface InTransaction<T> {
+        fun execute(db: SQLiteDatabase): T
     }
 }

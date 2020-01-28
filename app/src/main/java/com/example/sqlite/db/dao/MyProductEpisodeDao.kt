@@ -93,23 +93,23 @@ class MyProductEpisodeDao(db: SQLiteDatabase) : BaseDao<MyProductEpisode>(db) {
     }
 
     override fun cursorToEntity(cursor: Cursor): MyProductEpisode {
+
         return MyProductEpisode(
-            cursor.getInt(cursor.getColumnIndex(COLUMN_ID)),
-            cursor.getInt(cursor.getColumnIndex(COLUMN_PRODUCT_ID)),
-            cursor.getInt(cursor.getColumnIndex(COLUMN_PRODUCT_EPISODE_ID)),
-            cursor.getInt(cursor.getColumnIndex(COLUMN_TOTAL_PAGE_INFO)),
-            cursor.getInt(cursor.getColumnIndex(COLUMN_FINISHED_PAGE_INFO)),
-            cursor.getString(cursor.getColumnIndex(COLUMN_FINISHED_PAGE_EXTEND_INFO)),
-            cursor.getInt(cursor.getColumnIndex(COLUMN_LAST_USED_TICKET_RENT_TYPE)),
-            cursor.getInt(cursor.getColumnIndex(COLUMN_LAST_USED_TICKET_TYPE_ID)),
-            cursor.getString(cursor.getColumnIndex(COLUMN_LAST_VIEWER_STARTED_AT)),
-            cursor.getString(cursor.getColumnIndex(COLUMN_TICKET_RENT_STARTED_AT)),
-            cursor.getString(cursor.getColumnIndex(COLUMN_TICKET_RENT_EXPIRED_AT)),
-            cursor.getString(cursor.getColumnIndex(COLUMN_EPISODE_SALE_TYPE)),
-            cursor.getString(cursor.getColumnIndex(COLUMN_JSON_TEXT)),
-            cursor.getInt(cursor.getColumnIndex(COLUMN_FILE_DOWNLOAD_STATUS)),
-            cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS)),
-            cursor.getString(cursor.getColumnIndex(COLUMN_UPDATED_AT))
+            getColumnIndex(cursor, COLUMN_PRODUCT_ID)?.let { cursor.getInt(it) },
+            getColumnIndex(cursor, COLUMN_PRODUCT_EPISODE_ID)?.let { cursor.getInt(it) },
+            getColumnIndex(cursor, COLUMN_TOTAL_PAGE_INFO)?.let { cursor.getInt(it) },
+            getColumnIndex(cursor, COLUMN_FINISHED_PAGE_INFO)?.let { cursor.getInt(it) },
+            getColumnIndex(cursor, COLUMN_FINISHED_PAGE_EXTEND_INFO)?.let { cursor.getString(it) },
+            getColumnIndex(cursor, COLUMN_LAST_USED_TICKET_RENT_TYPE)?.let { cursor.getInt(it) },
+            getColumnIndex(cursor, COLUMN_LAST_USED_TICKET_TYPE_ID)?.let { cursor.getInt(it) },
+            getColumnIndex(cursor, COLUMN_LAST_VIEWER_STARTED_AT)?.let { cursor.getString(it) },
+            getColumnIndex(cursor, COLUMN_TICKET_RENT_STARTED_AT)?.let { cursor.getString(it) },
+            getColumnIndex(cursor, COLUMN_TICKET_RENT_EXPIRED_AT)?.let { cursor.getString(it) },
+            getColumnIndex(cursor, COLUMN_EPISODE_SALE_TYPE)?.let { cursor.getString(it) },
+            getColumnIndex(cursor, COLUMN_JSON_TEXT)?.let { cursor.getString(it) },
+            getColumnIndex(cursor, COLUMN_FILE_DOWNLOAD_STATUS)?.let { cursor.getInt(it) },
+            getColumnIndex(cursor, COLUMN_STATUS)?.let { cursor.getInt(it) },
+            getColumnIndex(cursor, COLUMN_UPDATED_AT)?.let { cursor.getString(it) }
         )
     }
 }

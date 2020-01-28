@@ -3,7 +3,6 @@ package com.example.sqlite.db.dao
 import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import com.example.sqlite.db.dao.MyProductDao.Companion.COLUMN_COUNT
 import kotlin.math.ceil
 import kotlin.math.floor
 
@@ -11,42 +10,54 @@ import kotlin.math.floor
 abstract class BaseDao<T>(private val db: SQLiteDatabase) {
 
     companion object {
-        const val SQLITE_MAX_COLUMN_COUNT = 999
+        private const val SQLITE_MAX_COLUMN_COUNT = 999
     }
 
-    abstract fun cursorToEntity(cursor: Cursor): T
+    protected abstract fun cursorToEntity(cursor: Cursor): T
 
-    fun getLoopCount(columnCount: Int, dataCount: Int) = ceil((columnCount * dataCount).toDouble() / SQLITE_MAX_COLUMN_COUNT).toInt()
+    protected fun getLoopCount(columnCount: Int, dataCount: Int) =
+        ceil((columnCount * dataCount).toDouble() / SQLITE_MAX_COLUMN_COUNT).toInt()
 
-    fun getRowPerLoop(columnCount: Int) = floor(SQLITE_MAX_COLUMN_COUNT / COLUMN_COUNT.toDouble()).toInt()
+    protected fun getRowPerLoop(columnCount: Int) =
+        floor(SQLITE_MAX_COLUMN_COUNT / columnCount.toDouble()).toInt()
 
-    fun updateOrInsert(
+    protected fun updateOrInsert(
         tableName: String,
         values: ContentValues,
         whereClause: String,
         whereArgs: Array<String>?
     ): Boolean = update(tableName, values, whereClause, whereArgs) || insert(tableName, values)
 
-    fun query(
+    protected fun query(
         tableName: String,
-        selectionClause: String,
+        selectionClause: String?,
         selectionArgs: Array<String>?
-    ): Cursor? = db.query(tableName, null, selectionClause, selectionArgs, null, null, null)
+    ): Cursor? = query(tableName, null, selectionClause, selectionArgs)
 
-    fun insert(
+    protected fun query(
+        tableName: String,
+        columns: Array<String>?,
+        selectionClause: String?,
+        selectionArgs: Array<String>?
+    ): Cursor? = db.query(tableName, columns, selectionClause, selectionArgs, null, null, null)
+
+    protected fun insert(
         tableName: String,
         values: ContentValues
     ): Boolean =
         db.insertWithOnConflict(tableName, null, values, SQLiteDatabase.CONFLICT_IGNORE) != -1L
 
-    fun update(
+    protected fun update(
         tableName: String,
         values: ContentValues,
         whereClause: String,
         whereArgs: Array<String>?
     ): Boolean = db.update(tableName, values, whereClause, whereArgs) > 0
 
-    interface Binder<T> {
-        fun <T> bind(): T
+    protected fun getColumnIndex(cursor: Cursor, columnName: String): Int? {
+        val index = cursor.getColumnIndex(columnName)
+        if (index < 0) return null
+        return index
+
     }
 }
