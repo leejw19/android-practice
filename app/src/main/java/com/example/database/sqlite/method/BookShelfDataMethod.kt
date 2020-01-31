@@ -1,17 +1,17 @@
-package com.example.sqlite.db.method
+package com.example.database.sqlite.method
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import com.example.sqlite.db.SQLiteTransaction
-import com.example.sqlite.db.dao.MyProductDao
-import com.example.sqlite.db.dto.MyProduct
-import com.example.sqlite.db.schema.MyProductSchema
+import com.example.database.sqlite.SQLiteTransaction
+import com.example.database.sqlite.dao.MyProductDao
+import com.example.database.sqlite.dto.MyProductDto
+import com.example.database.sqlite.schema.MyProductSchema
 
 class BookShelfDataMethod {
 
     companion object {
 
-        fun registerMyProducts(context: Context, myProductList: ArrayList<MyProduct>): Boolean? {
+        fun registerMyProducts(context: Context, myProductList: ArrayList<MyProductDto>): Boolean? {
             return SQLiteTransaction.tx(context, object : SQLiteTransaction.InTransaction<Boolean> {
                 override fun execute(db: SQLiteDatabase) =
                     MyProductDao(db).updateOrInsert(myProductList)
@@ -20,7 +20,7 @@ class BookShelfDataMethod {
 
         fun registerMyProductsWithStatement(
             context: Context,
-            myProductList: ArrayList<MyProduct>
+            myProductList: ArrayList<MyProductDto>
         ): Boolean? {
             return SQLiteTransaction.tx(context, object : SQLiteTransaction.InTransaction<Boolean> {
                 override fun execute(db: SQLiteDatabase) =
@@ -30,7 +30,7 @@ class BookShelfDataMethod {
 
         fun registerMyProductsWithRawSql(
             context: Context,
-            myProductList: ArrayList<MyProduct>
+            myProductList: ArrayList<MyProductDto>
         ): Boolean? {
 
             return SQLiteTransaction.tx(context, object : SQLiteTransaction.InTransaction<Boolean> {
@@ -47,26 +47,26 @@ class BookShelfDataMethod {
             })
         }
 
-        fun readAllMyProduct(context: Context): ArrayList<MyProduct>? {
+        fun readAllMyProduct(context: Context): ArrayList<MyProductDto>? {
             return SQLiteTransaction.tx(
                 context,
-                object : SQLiteTransaction.InTransaction<ArrayList<MyProduct>> {
+                object : SQLiteTransaction.InTransaction<ArrayList<MyProductDto>> {
                     override fun execute(db: SQLiteDatabase) = MyProductDao(db).selectAll()
                 })
         }
 
-        fun readMyProduct(context: Context, productId: Long): MyProduct? {
+        fun readMyProduct(context: Context, productId: Long): MyProductDto? {
             return SQLiteTransaction.tx(
                 context,
-                object : SQLiteTransaction.InTransaction<MyProduct?> {
+                object : SQLiteTransaction.InTransaction<MyProductDto?> {
                     override fun execute(db: SQLiteDatabase) = MyProductDao(db).select(productId)
                 })
         }
 
-        fun updateMyProduct(context: Context, myProduct: MyProduct): Boolean? {
+        fun updateMyProduct(context: Context, myProductDto: MyProductDto): Boolean? {
 
             return SQLiteTransaction.tx(context, object : SQLiteTransaction.InTransaction<Boolean> {
-                override fun execute(db: SQLiteDatabase) = MyProductDao(db).update(myProduct)
+                override fun execute(db: SQLiteDatabase) = MyProductDao(db).update(myProductDto)
             })
         }
 

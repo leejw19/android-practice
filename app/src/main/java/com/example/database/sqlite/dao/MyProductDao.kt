@@ -1,37 +1,37 @@
-package com.example.sqlite.db.dao
+package com.example.database.sqlite.dao
 
 import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
-import com.example.sqlite.db.dto.MyProduct
-import com.example.sqlite.db.schema.MyProductSchema
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_BOOKMARKED_AT
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_FLAG_FETCH_SORT_VALUE_LIST_UPDATED_ASC
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_IS_TICKET_CONSUMED_MY_PRODUCT_FLAG
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_JSON_TEXT
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_LAST_PRODUCT_EPISODE_ID
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_LAST_PRODUCT_EPISODE_TITLE
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_LAST_PURCHASED_AT
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_LOCAL_HISTORY_STATUS
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_LOCAL_PUSH_STATUS
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_NOW_FREE_NEXT_META_INFO
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_NOW_FREE_NEXT_READ_AT
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_NOW_FREE_OPEN_STATUS_FINISH_DAYS
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_PRODUCT_EPISODE_LIST_SORT_INFO
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_PRODUCT_ID
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_SORT_VALUE_LIST_UPDATED_ASC
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_STATUS
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_TICKET_CONSUMED_MY_PRODUCT_STATUS
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_TICKET_TOTAL_COUNT
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_UPDATED_AT
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_USER_CONSUMED_TICKET_PRODUCT_EPISODE_INFO_LAST_SYNC_TIME
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_WAIT_FREE_EPISODE_COUNT
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_WAIT_FREE_EPISODE_READ_COUNT
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_WAIT_FREE_TICKET_FINISH_CHARGED_AT
-import com.example.sqlite.db.schema.MyProductSchema.COLUMN_WAIT_FREE_TICKET_START_CHARGED_AT
+import com.example.database.sqlite.dto.MyProductDto
+import com.example.database.sqlite.schema.MyProductSchema
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_BOOKMARKED_AT
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_FLAG_FETCH_SORT_VALUE_LIST_UPDATED_ASC
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_IS_TICKET_CONSUMED_MY_PRODUCT_FLAG
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_JSON_TEXT
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_LAST_PRODUCT_EPISODE_ID
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_LAST_PRODUCT_EPISODE_TITLE
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_LAST_PURCHASED_AT
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_LOCAL_HISTORY_STATUS
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_LOCAL_PUSH_STATUS
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_NOW_FREE_NEXT_META_INFO
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_NOW_FREE_NEXT_READ_AT
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_NOW_FREE_OPEN_STATUS_FINISH_DAYS
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_PRODUCT_EPISODE_LIST_SORT_INFO
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_PRODUCT_ID
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_SORT_VALUE_LIST_UPDATED_ASC
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_STATUS
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_TICKET_CONSUMED_MY_PRODUCT_STATUS
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_TICKET_TOTAL_COUNT
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_UPDATED_AT
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_USER_CONSUMED_TICKET_PRODUCT_EPISODE_INFO_LAST_SYNC_TIME
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_WAIT_FREE_EPISODE_COUNT
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_WAIT_FREE_EPISODE_READ_COUNT
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_WAIT_FREE_TICKET_FINISH_CHARGED_AT
+import com.example.database.sqlite.schema.MyProductSchema.COLUMN_WAIT_FREE_TICKET_START_CHARGED_AT
 
-class MyProductDao(val db: SQLiteDatabase) : BaseDao<MyProduct>(db) {
+class MyProductDao(val db: SQLiteDatabase) : BaseDao<MyProductDto>(db) {
 
     companion object {
         const val INSERT_SQL =
@@ -42,33 +42,38 @@ class MyProductDao(val db: SQLiteDatabase) : BaseDao<MyProduct>(db) {
         const val COLUMN_COUNT = 3
     }
 
-    fun updateOrInsert(myProductList: ArrayList<MyProduct>): Boolean {
+    fun updateOrInsert(myProductList: ArrayList<MyProductDto>): Boolean {
 
         var successCount = 0
 
-        myProductList.forEach {
-            val values = ContentValues().apply {
+        try {
+            myProductList.forEach {
+                val values = ContentValues().apply {
 
-                put(COLUMN_PRODUCT_ID, it.productId)
-                put(COLUMN_JSON_TEXT, it.jsonText)
-                put(COLUMN_STATUS, it.status)
-            }
+                    put(COLUMN_PRODUCT_ID, it.productId)
+                    put(COLUMN_JSON_TEXT, it.jsonText)
+                    put(COLUMN_STATUS, it.status)
+                }
 
-            if (updateOrInsert(
+                val result = updateOrInsert(
                     MyProductSchema.TABLE_NAME,
                     values,
                     "$COLUMN_PRODUCT_ID = ?",
                     arrayOf(it.productId.toString())
                 )
-            ) successCount++
+                if (result) successCount++
 
+            }
+        } catch (e: Exception) {
+            Log.e("DB_TEST", "", e)
         }
 
+        Log.d("DB_TEST", "success count = $successCount")
         return successCount == myProductList.size
 
     }
 
-    fun updateOrInsert2(myProductList: ArrayList<MyProduct>): Boolean {
+    fun updateOrInsert2(myProductList: ArrayList<MyProductDto>): Boolean {
 
         if (myProductList.isEmpty()) {
             return false
@@ -122,8 +127,8 @@ class MyProductDao(val db: SQLiteDatabase) : BaseDao<MyProduct>(db) {
 
     }
 
-    fun selectAll(): ArrayList<MyProduct> {
-        val myProductList = arrayListOf<MyProduct>()
+    fun selectAll(): ArrayList<MyProductDto> {
+        val myProductList = arrayListOf<MyProductDto>()
         var count = 0
         query(MyProductSchema.TABLE_NAME, arrayOf(COLUMN_JSON_TEXT), null, null)?.let {
             try {
@@ -143,7 +148,7 @@ class MyProductDao(val db: SQLiteDatabase) : BaseDao<MyProduct>(db) {
         return myProductList
     }
 
-    fun select(productId: Long): MyProduct? {
+    fun select(productId: Long): MyProductDto? {
 
         return query(
             MyProductSchema.TABLE_NAME,
@@ -155,7 +160,7 @@ class MyProductDao(val db: SQLiteDatabase) : BaseDao<MyProduct>(db) {
         }
     }
 
-    fun selectByCondition(productId: Long): MyProduct? {
+    fun selectByCondition(productId: Long): MyProductDto? {
 
         return query(
             MyProductSchema.TABLE_NAME,
@@ -167,46 +172,46 @@ class MyProductDao(val db: SQLiteDatabase) : BaseDao<MyProduct>(db) {
         }
     }
 
-    fun update(myProduct: MyProduct): Boolean {
+    fun update(myProductDto: MyProductDto): Boolean {
         val values = ContentValues().apply {
 
-            put(COLUMN_PRODUCT_ID, myProduct.productId)
-            put(COLUMN_LAST_PRODUCT_EPISODE_ID, myProduct.lastProductEpisodeId)
-            put(COLUMN_LAST_PRODUCT_EPISODE_TITLE, myProduct.lastProductEpisodeTitle)
-            put(COLUMN_TICKET_TOTAL_COUNT, myProduct.ticketTotalCount)
-            put(COLUMN_WAIT_FREE_TICKET_START_CHARGED_AT, myProduct.ticketTotalCount)
-            put(COLUMN_WAIT_FREE_TICKET_FINISH_CHARGED_AT, myProduct.waitFreeTicketFinishChargedAt)
-            put(COLUMN_WAIT_FREE_EPISODE_COUNT, myProduct.waitFreeEpisodeCount)
-            put(COLUMN_WAIT_FREE_EPISODE_READ_COUNT, myProduct.waitFreeEpisodeReadCount)
-            put(COLUMN_NOW_FREE_NEXT_META_INFO, myProduct.nowFreeNextMetaInfo)
-            put(COLUMN_NOW_FREE_NEXT_READ_AT, myProduct.nowFreeNextReadAt)
-            put(COLUMN_NOW_FREE_OPEN_STATUS_FINISH_DAYS, myProduct.nowFreeOpenStatusFinishDays)
-            put(COLUMN_IS_TICKET_CONSUMED_MY_PRODUCT_FLAG, myProduct.isTicketConsumedMyProductFlag)
-            put(COLUMN_LAST_PURCHASED_AT, myProduct.lastPurchasedAt)
-            put(COLUMN_BOOKMARKED_AT, myProduct.bookmarkedAt)
+            put(COLUMN_PRODUCT_ID, myProductDto.productId)
+            put(COLUMN_LAST_PRODUCT_EPISODE_ID, myProductDto.lastProductEpisodeId)
+            put(COLUMN_LAST_PRODUCT_EPISODE_TITLE, myProductDto.lastProductEpisodeTitle)
+            put(COLUMN_TICKET_TOTAL_COUNT, myProductDto.ticketTotalCount)
+            put(COLUMN_WAIT_FREE_TICKET_START_CHARGED_AT, myProductDto.ticketTotalCount)
+            put(COLUMN_WAIT_FREE_TICKET_FINISH_CHARGED_AT, myProductDto.waitFreeTicketFinishChargedAt)
+            put(COLUMN_WAIT_FREE_EPISODE_COUNT, myProductDto.waitFreeEpisodeCount)
+            put(COLUMN_WAIT_FREE_EPISODE_READ_COUNT, myProductDto.waitFreeEpisodeReadCount)
+            put(COLUMN_NOW_FREE_NEXT_META_INFO, myProductDto.nowFreeNextMetaInfo)
+            put(COLUMN_NOW_FREE_NEXT_READ_AT, myProductDto.nowFreeNextReadAt)
+            put(COLUMN_NOW_FREE_OPEN_STATUS_FINISH_DAYS, myProductDto.nowFreeOpenStatusFinishDays)
+            put(COLUMN_IS_TICKET_CONSUMED_MY_PRODUCT_FLAG, myProductDto.isTicketConsumedMyProductFlag)
+            put(COLUMN_LAST_PURCHASED_AT, myProductDto.lastPurchasedAt)
+            put(COLUMN_BOOKMARKED_AT, myProductDto.bookmarkedAt)
             put(
                 COLUMN_USER_CONSUMED_TICKET_PRODUCT_EPISODE_INFO_LAST_SYNC_TIME,
-                myProduct.userConsumedTicketProductEpisodeInfoLastSyncTime
+                myProductDto.userConsumedTicketProductEpisodeInfoLastSyncTime
             )
-            put(COLUMN_PRODUCT_EPISODE_LIST_SORT_INFO, myProduct.productEpisodeListSortInfo)
-            put(COLUMN_LOCAL_PUSH_STATUS, myProduct.localPushStatus)
-            put(COLUMN_LOCAL_HISTORY_STATUS, myProduct.localHistoryStatus)
-            put(COLUMN_TICKET_CONSUMED_MY_PRODUCT_STATUS, myProduct.ticketConsumedMyProductStatus)
-            put(COLUMN_JSON_TEXT, myProduct.jsonText)
-            put(COLUMN_STATUS, myProduct.status)
-            put(COLUMN_SORT_VALUE_LIST_UPDATED_ASC, myProduct.sortValueListUpdatedAsc)
+            put(COLUMN_PRODUCT_EPISODE_LIST_SORT_INFO, myProductDto.productEpisodeListSortInfo)
+            put(COLUMN_LOCAL_PUSH_STATUS, myProductDto.localPushStatus)
+            put(COLUMN_LOCAL_HISTORY_STATUS, myProductDto.localHistoryStatus)
+            put(COLUMN_TICKET_CONSUMED_MY_PRODUCT_STATUS, myProductDto.ticketConsumedMyProductStatus)
+            put(COLUMN_JSON_TEXT, myProductDto.jsonText)
+            put(COLUMN_STATUS, myProductDto.status)
+            put(COLUMN_SORT_VALUE_LIST_UPDATED_ASC, myProductDto.sortValueListUpdatedAsc)
             put(
                 COLUMN_FLAG_FETCH_SORT_VALUE_LIST_UPDATED_ASC,
-                myProduct.flagFetchSortValueListUpdatedAsc
+                myProductDto.flagFetchSortValueListUpdatedAsc
             )
-            put(COLUMN_UPDATED_AT, myProduct.updatedAt)
+            put(COLUMN_UPDATED_AT, myProductDto.updatedAt)
         }
 
         return update(
             MyProductSchema.TABLE_NAME,
             values,
             "$COLUMN_PRODUCT_ID = ?",
-            arrayOf(myProduct.productId.toString())
+            arrayOf(myProductDto.productId.toString())
         )
 
     }
@@ -215,8 +220,8 @@ class MyProductDao(val db: SQLiteDatabase) : BaseDao<MyProduct>(db) {
         db.delete(MyProductSchema.TABLE_NAME, null, null)
     }
 
-    override fun cursorToEntity(cursor: Cursor): MyProduct {
-        return MyProduct(
+    override fun cursorToEntity(cursor: Cursor): MyProductDto {
+        return MyProductDto(
             getColumnIndex(cursor, COLUMN_PRODUCT_ID)?.let { cursor.getInt(it) },
             getColumnIndex(cursor, COLUMN_LAST_PRODUCT_EPISODE_ID)?.let { cursor.getInt(it) },
             getColumnIndex(cursor, COLUMN_LAST_PRODUCT_EPISODE_TITLE)?.let { cursor.getString(it) },

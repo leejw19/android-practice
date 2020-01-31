@@ -1,14 +1,17 @@
-package com.example.sqlite.db
+package com.example.database.sqlite
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-import com.example.sqlite.db.schema.MyProductEpisodeSchema
-import com.example.sqlite.db.schema.MyProductSchema
+import com.example.database.sqlite.schema.MyProductEpisodeSchema
+import com.example.database.sqlite.schema.MyProductSchema
 
-class DataBaseHelper private constructor(context: Context) :
-    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class DataBaseHelper constructor(context: Context) :
+    SQLiteOpenHelper(context,
+        DATABASE_NAME, null,
+        DATABASE_VERSION
+    ) {
 
     companion object {
         private const val DATABASE_VERSION = 1
@@ -26,7 +29,9 @@ class DataBaseHelper private constructor(context: Context) :
             }
 
         fun open(context: Context) {
-            getInstance(context)
+            getInstance(
+                context
+            )
         }
 
 

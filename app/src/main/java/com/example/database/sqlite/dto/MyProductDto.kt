@@ -1,6 +1,6 @@
-package com.example.sqlite.db.dto
+package com.example.database.sqlite.dto
 
-data class MyProduct(
+data class MyProductDto(
     var productId: Int? = null,
     var lastProductEpisodeId: Int? = null,
     var lastProductEpisodeTitle: String? = null,

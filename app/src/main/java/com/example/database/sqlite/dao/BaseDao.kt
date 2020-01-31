@@ -1,4 +1,4 @@
-package com.example.sqlite.db.dao
+package com.example.database.sqlite.dao
 
 import android.content.ContentValues
 import android.database.Cursor
@@ -26,7 +26,7 @@ abstract class BaseDao<T>(private val db: SQLiteDatabase) {
         values: ContentValues,
         whereClause: String,
         whereArgs: Array<String>?
-    ): Boolean = update(tableName, values, whereClause, whereArgs) || insert(tableName, values)
+    ): Boolean = insert(tableName, values) || update(tableName, values, whereClause, whereArgs)
 
     protected fun query(
         tableName: String,

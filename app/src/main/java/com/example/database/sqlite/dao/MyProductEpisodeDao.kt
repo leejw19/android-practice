@@ -1,26 +1,25 @@
-package com.example.sqlite.db.dao
+package com.example.database.sqlite.dao
 
 import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import com.example.sqlite.db.dto.MyProductEpisode
-import com.example.sqlite.db.schema.MyProductEpisodeSchema.MY_PRODUCT_EPISODE
-import com.example.sqlite.db.schema.MyProductEpisodeSchema.COLUMN_ID
-import com.example.sqlite.db.schema.MyProductEpisodeSchema.COLUMN_PRODUCT_ID
-import com.example.sqlite.db.schema.MyProductEpisodeSchema.COLUMN_PRODUCT_EPISODE_ID
-import com.example.sqlite.db.schema.MyProductEpisodeSchema.COLUMN_TOTAL_PAGE_INFO
-import com.example.sqlite.db.schema.MyProductEpisodeSchema.COLUMN_FINISHED_PAGE_INFO
-import com.example.sqlite.db.schema.MyProductEpisodeSchema.COLUMN_FINISHED_PAGE_EXTEND_INFO
-import com.example.sqlite.db.schema.MyProductEpisodeSchema.COLUMN_LAST_USED_TICKET_RENT_TYPE
-import com.example.sqlite.db.schema.MyProductEpisodeSchema.COLUMN_LAST_USED_TICKET_TYPE_ID
-import com.example.sqlite.db.schema.MyProductEpisodeSchema.COLUMN_LAST_VIEWER_STARTED_AT
-import com.example.sqlite.db.schema.MyProductEpisodeSchema.COLUMN_TICKET_RENT_STARTED_AT
-import com.example.sqlite.db.schema.MyProductEpisodeSchema.COLUMN_TICKET_RENT_EXPIRED_AT
-import com.example.sqlite.db.schema.MyProductEpisodeSchema.COLUMN_EPISODE_SALE_TYPE
-import com.example.sqlite.db.schema.MyProductEpisodeSchema.COLUMN_JSON_TEXT
-import com.example.sqlite.db.schema.MyProductEpisodeSchema.COLUMN_FILE_DOWNLOAD_STATUS
-import com.example.sqlite.db.schema.MyProductEpisodeSchema.COLUMN_STATUS
-import com.example.sqlite.db.schema.MyProductEpisodeSchema.COLUMN_UPDATED_AT
+import com.example.database.sqlite.dto.MyProductEpisode
+import com.example.database.sqlite.schema.MyProductEpisodeSchema.MY_PRODUCT_EPISODE
+import com.example.database.sqlite.schema.MyProductEpisodeSchema.COLUMN_PRODUCT_ID
+import com.example.database.sqlite.schema.MyProductEpisodeSchema.COLUMN_PRODUCT_EPISODE_ID
+import com.example.database.sqlite.schema.MyProductEpisodeSchema.COLUMN_TOTAL_PAGE_INFO
+import com.example.database.sqlite.schema.MyProductEpisodeSchema.COLUMN_FINISHED_PAGE_INFO
+import com.example.database.sqlite.schema.MyProductEpisodeSchema.COLUMN_FINISHED_PAGE_EXTEND_INFO
+import com.example.database.sqlite.schema.MyProductEpisodeSchema.COLUMN_LAST_USED_TICKET_RENT_TYPE
+import com.example.database.sqlite.schema.MyProductEpisodeSchema.COLUMN_LAST_USED_TICKET_TYPE_ID
+import com.example.database.sqlite.schema.MyProductEpisodeSchema.COLUMN_LAST_VIEWER_STARTED_AT
+import com.example.database.sqlite.schema.MyProductEpisodeSchema.COLUMN_TICKET_RENT_STARTED_AT
+import com.example.database.sqlite.schema.MyProductEpisodeSchema.COLUMN_TICKET_RENT_EXPIRED_AT
+import com.example.database.sqlite.schema.MyProductEpisodeSchema.COLUMN_EPISODE_SALE_TYPE
+import com.example.database.sqlite.schema.MyProductEpisodeSchema.COLUMN_JSON_TEXT
+import com.example.database.sqlite.schema.MyProductEpisodeSchema.COLUMN_FILE_DOWNLOAD_STATUS
+import com.example.database.sqlite.schema.MyProductEpisodeSchema.COLUMN_STATUS
+import com.example.database.sqlite.schema.MyProductEpisodeSchema.COLUMN_UPDATED_AT
 
 class MyProductEpisodeDao(db: SQLiteDatabase) : BaseDao<MyProductEpisode>(db) {
 

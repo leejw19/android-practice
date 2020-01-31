@@ -1,4 +1,4 @@
-package com.example.sqlite.db
+package com.example.database.sqlite
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -10,15 +10,16 @@ class SQLiteTransaction {
 
         fun <T> tx(context: Context, inTransaction: InTransaction<T>): T? {
 
-            val db = DataBaseHelper.getInstance(context).getDatabase()
+//            val db = DataBaseHelper.getInstance(context).getDatabase()
+            val db = DataBaseHelper(context).writableDatabase
+
             var result: T? = null
 
             try {
-                db.beginTransactionNonExclusive()
+                db.beginTransaction()
                 result = inTransaction.execute(db)
                 db.setTransactionSuccessful()
             } catch (e: Exception) {
-
                 Log.e("DB", e.message ?: "error")
             } finally {
                 db.endTransaction()

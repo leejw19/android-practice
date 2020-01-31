@@ -1,4 +1,4 @@
-package com.example.sqlite.db.schema
+package com.example.database.sqlite.schema
 
 object MyProductEpisodeSchema {
 

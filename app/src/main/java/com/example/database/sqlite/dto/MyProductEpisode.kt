@@ -1,4 +1,4 @@
-package com.example.sqlite.db.dto
+package com.example.database.sqlite.dto
 
 data class MyProductEpisode(
 //    val id: Int = 0,

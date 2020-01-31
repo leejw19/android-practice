@@ -1,4 +1,4 @@
-package com.example.sqlite
+package com.example.database
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
